@@ -8,10 +8,11 @@ import java.nio.ByteBuffer;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 
-import com.sun.glass.ui.Screen;
 import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
 import com.sun.javafx.iio.common.ImageLoaderImpl;
+
+import javafx.stage.Screen;
 
 public class SvgImageLoader extends ImageLoaderImpl {
 
@@ -60,7 +61,7 @@ public class SvgImageLoader extends ImageLoaderImpl {
 	public float calculateMaxRenderScale() {
 		float maxRenderScale = 0;
 		for (Screen screen : Screen.getScreens()) {
-			maxRenderScale = Math.max(maxRenderScale, screen.getRenderScale());
+			maxRenderScale = Math.max(maxRenderScale, (float)screen.getDpi ()/72.0f);
 		}
 		return maxRenderScale;
 	}
