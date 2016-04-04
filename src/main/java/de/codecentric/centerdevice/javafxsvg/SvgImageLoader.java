@@ -11,6 +11,8 @@ import org.apache.batik.transcoder.TranscoderInput;
 import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
 import com.sun.javafx.iio.common.ImageLoaderImpl;
+import com.sun.javafx.stage.ScreenHelper;
+import com.sun.javafx.tk.quantum.QuantumToolkit;
 
 import javafx.stage.Screen;
 
@@ -58,12 +60,22 @@ public class SvgImageLoader extends ImageLoaderImpl {
 		return maxPixelScale;
 	}
 
-	public float calculateMaxRenderScale() {
-		float maxRenderScale = 0;
-		for (Screen screen : Screen.getScreens()) {
-			maxRenderScale = Math.max(maxRenderScale, (float)screen.getDpi ()/72.0f);
-		}
-		return maxRenderScale;
+  public float calculateMaxRenderScale() {
+    try{
+      return ((QuantumToolkit) QuantumToolkit.getToolkit()).getMaxRenderScale();
+    } catch(LinkageError e){
+      //continue
+    }
+	  try{
+  		float maxRenderScale = 0;
+  		for (Screen screen : Screen.getScreens()) {
+  			maxRenderScale = Math.max(maxRenderScale, ScreenHelper.getScreenAccessor ().getRenderScale (screen));
+  		}
+  		return maxRenderScale;
+	  }	catch(LinkageError e){
+	    //we can't rely on com.sun.javafx.stage.ScreenHelper so we have to manage a failover
+	    return 1.0f;
+  	}
 	}
 
 	private ImageFrame createImageFrame(int width, int height, float pixelScale) throws TranscoderException {
